@@ -66,12 +66,12 @@ const SideBar = () => {
             <Image 
               fill
               alt="Logo"
-              src="/logo.png"
+              src="/logo.svg"
               className="scale-125"
             />
           </div>
           <h1 className={cn("text-2xl font-bold", montserrat.className)}>
-            Cluster
+          Cluster
           </h1>
         </Link>
         <div className="space-y-1">

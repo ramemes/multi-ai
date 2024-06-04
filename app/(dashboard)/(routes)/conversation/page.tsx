@@ -17,6 +17,9 @@ import { useState } from "react";
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 import { Empty } from "@/components/empty";
 import { cn } from "@/lib/utils";
+import { Loader } from "@/components/loader";
+import { UserAvatar } from "@/components/user-avatar";
+import { BotAvatar } from "@/components/bot-avatar";
 
 
 const ConversationPage = () => {
@@ -34,6 +37,7 @@ const ConversationPage = () => {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
+      setMessages((current) => [...current, userMessage])
       const userMessage: ChatCompletionMessageParam = {
         role: "user",
         content: values.prompt
@@ -44,11 +48,12 @@ const ConversationPage = () => {
         messages: newMessages,
       });
 
-      setMessages((current) => [...current, userMessage, response.data]);
+      setMessages((current) => [...current, response.data]);
       form.reset();
 
     } catch (error: any) {
       // TODO: open pro modal
+      setMessages((current) => current.slice(-1))
       console.log(error)
     } finally {
       router.refresh();
@@ -97,9 +102,7 @@ const ConversationPage = () => {
                   </FormItem>
                 )}
               />
-              <Button  
-                className={cn("col-span-12 lg:col-span-2", isLoading ? "animate-pulse pointer-events-none" : "")}
-              >
+              <Button className="col-span-12 lg:col-span-2" disabled={isLoading}>
                 Generate
               </Button>
             </form>
@@ -123,8 +126,17 @@ const ConversationPage = () => {
                 }
           
                 return (
-                    <div key={`${index}-${message.content}`}>
-                      {message.content}
+                    <div 
+                      key={`${index}-${message.content}`}
+                      className={cn("p-8 w-full flex items-start gap-x-8 rounded-lg",
+                        message.role === "user" ? "bg-white border border-black/10 justify-end" : "bg-muted"
+                      )}
+                    >
+                      {message.role === "assistant" ?  <BotAvatar/> : null}
+                      <p className="text-sm">
+                        {message.content}
+                      </p>
+                      {/* {message.role === "user" ? <UserAvatar/> : null} */}
                     </div>
                   ) 
               }
